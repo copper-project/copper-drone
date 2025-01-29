@@ -1,0 +1,29 @@
+[package]
+name = "drone"
+version = "0.1.0"
+edition = "2021"
+default-run = "drone"
+
+# The main executable of your application
+[[bin]]
+name = "drone"
+path = "src/main.rs"
+
+[[bin]]
+name = "drone-logreader"
+path = "src/logreader.rs"
+required-features = ["logreader"] # Ensures this binary is only compiled when the feature is enabled
+
+[dependencies]
+cu29 = { version = "*" }
+bincode = { version = "2.0.0-rc.3", features = ["derive"] }
+cu29-helpers = { version = "*" }
+
+[features]
+default = [] # Default feature set, does not include logreader
+logreader = ["cu29-export"] # Feature to enable logreader and its dependency
+
+[dependencies.cu29-export]
+version = "*"
+optional = true # Only included when the logreader feature is enabled
+
