@@ -3,7 +3,11 @@
     tasks: [
         (
             id: "src",
-            type: "tasks::MySource",
+            type: "cu_gstreamer::CuDefaultGStreamer",
+            config: {
+               "pipeline": "v4l2src device=/dev/video1 extra-controls=\"c,exposure=2190,gain=800\" num-buffers=1 ! video/x-raw,format=NV12,width=1920,height=1080 ! appsink name=copper",
+               "caps": "video/x-raw, format=NV12, width=1920, height=1080",
+            }
         ),
         (
             id: "t-0",
@@ -16,7 +20,7 @@
      ],
     // Makes a connection from the source to the task and from the task to the sink.
     cnx: [
-        (src: "src",  dst: "t-0",   msg: "crate::tasks::MyPayload"),
+        (src: "src",  dst: "t-0",   msg: "cu_gstreamer::CuGstBuffer"),
         (src: "t-0",  dst: "sink",   msg: "crate::tasks::MyPayload"),
     ],
 )
