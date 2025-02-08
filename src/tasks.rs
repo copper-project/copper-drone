@@ -1,12 +1,14 @@
 use cu29::prelude::*;
 use bincode::{Decode, Encode};
 use cu_gstreamer::CuGstBuffer;
+use std::thread;
+use std::time::Duration;
+
 
 #[derive(Default, Debug, Clone, Encode, Decode)]
 pub struct MyPayload {
     value: i32,
 }
-
 
 pub struct MyTask {}
 
@@ -23,25 +25,26 @@ impl<'cl> CuTask<'cl> for MyTask {
         Ok(Self {})
     }
 
-    // don't forget the other lifecycle methods if you need them: start, stop, preprocess, postprocess
-
     fn process(
         &mut self,
         _clock: &RobotClock,
         input: Self::Input,
         output: Self::Output,
     ) -> CuResult<()> {
-        println!("Received Gstreamer: {:?}", input.payload().unwrap());
+        let payload = input.payload();
+        if payload.is_none() {
+            thread::sleep(Duration::from_millis(100)); 
+            return Ok(());
+        }
+        println!("Received Gstreamer: {:?}", payload.unwrap());
         output.set_payload(MyPayload { value: 42 });
-        Ok(()) // outputs another message for downstream
+        Ok(())
     }
 }
 
-// Defines a sink (ie. actualtion)
 #[derive(Default)]
 pub struct MySink {}
 
-// Needs to be fully implemented if you want to have a stateful task.
 impl Freezable for MySink {}
 
 impl<'cl> CuSinkTask<'cl> for MySink {
@@ -56,7 +59,11 @@ impl<'cl> CuSinkTask<'cl> for MySink {
     // don't forget the other lifecycle methods if you need them: start, stop, preprocess, postprocess
 
     fn process(&mut self, _clock: &RobotClock, input: Self::Input) -> CuResult<()> {
-        debug!("Sink Received message: {}", input.payload().unwrap().value);
+        let payload = input.payload();
+        if payload.is_none() {
+            return Ok(());
+        }
+        debug!("Sink Received message: {}", payload.unwrap().value);
         Ok(())
     }
 }

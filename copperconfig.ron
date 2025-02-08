@@ -24,4 +24,7 @@
         (src: "src",  dst: "t-0",   msg: "cu_gstreamer::CuGstBuffer"),
         (src: "t-0",  dst: "sink",   msg: "crate::tasks::MyPayload"),
     ],
+    logging: (
+	enable_task_logging: false,
+    ),
 )
