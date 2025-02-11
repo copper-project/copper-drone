@@ -6,7 +6,6 @@
             type: "cu_gstreamer::CuDefaultGStreamer",
             config: {
                "pipeline": "v4l2src device=/dev/video0 io-mode=4 ! video/x-raw,format=NV12,width=1920,height=1080 ! appsink name=copper",
-               // "pipeline": "v4l2src device=/dev/video0 io-mode=4 extra-controls=\"c,exposure=2190,gain=800\" ! video/x-raw,format=NV12,width=1920,height=1080 ! appsink name=copper",
                "caps": "video/x-raw,format=NV12,width=1920,height=1080",
             }
         ),
