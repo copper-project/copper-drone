@@ -3,7 +3,12 @@ use bincode::{Decode, Encode};
 use cu_gstreamer::CuGstBuffer;
 use std::thread;
 use std::time::Duration;
-use rerun::{ChannelDatatype, ColorModel, Image, RecordingStream, RecordingStreamBuilder};
+use rerun::{ColorModel, RecordingStream, RecordingStreamBuilder};
+use imageproc::contrast::adaptive_threshold;
+use image::GrayImage;
+
+use apriltag::DetectorBuilder;
+use apriltag::Family;
 
 #[derive(Default, Debug, Clone, Encode, Decode)]
 pub struct MyPayload {
@@ -12,6 +17,7 @@ pub struct MyPayload {
 
 pub struct MyTask {
     rec: RecordingStream,
+    detector: apriltag::Detector,
 }
 
 impl Freezable for MyTask {}
@@ -25,9 +31,13 @@ impl<'cl> CuTask<'cl> for MyTask {
         Self: Sized,
     {
         let rec = RecordingStreamBuilder::new("Camera B&W Viz")
-            .connect_tcp_opts(std::net::SocketAddr::from(([192, 168, 1, 181], 9876)), None)
+            .spawn()
             .unwrap();
-        Ok(Self {rec})
+        let family: Family = "tag16h5".parse().unwrap();
+        let bits_corrected = 1;
+        let detector = DetectorBuilder::default().add_family_bits(family, bits_corrected)
+               .build().unwrap();
+       Ok(Self {rec, detector})
     }
 
     fn process(
@@ -47,16 +57,31 @@ impl<'cl> CuTask<'cl> for MyTask {
 
         let width = 1920;
         let height = 1080;
+        let local_threshold_size = 107;
         let y_plane_size = width * height;
         let grey_image = &data[0..y_plane_size];
 
-        let image = Image::from_color_model_and_bytes(
-            grey_image.to_vec(),
-            [width as u32, height as u32],
-            ColorModel::L,
-            ChannelDatatype::U8,
-        );
+        let instant = std::time::Instant::now();
+        let grey_img = GrayImage::from_raw(width as u32, height as u32, grey_image.into()).unwrap();
+        let thresholded_img: GrayImage = adaptive_threshold(&grey_img, local_threshold_size);
+        println!("Threashold time: {:?}", instant.elapsed());
+
+        let instant = std::time::Instant::now();
+        let mut proc_img = apriltag::Image::zeros_with_stride(width, height, width).unwrap();
+        proc_img.as_slice_mut().copy_from_slice(thresholded_img.as_ref());
+        let detections = self.detector.detect(&proc_img);
+        println!("Detection time: {:?}", instant.elapsed());
+
+        for detection in detections {
+            if detection.decision_margin() < 200.0 {
+                continue;
+            }
+            println!("Detection: {:?}", detection);
+        }
+
+        let image = rerun::Image::from_elements(thresholded_img.as_raw(), [width as u32, height as u32], ColorModel::L);
         self.rec.log("camera/image", &image).unwrap();
+        // thread::sleep(Duration::from_millis(100));
         output.set_payload(MyPayload { value: 42 });
         Ok(())
     }

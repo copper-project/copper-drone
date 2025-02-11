@@ -20,6 +20,10 @@ bincode = { version = "2.0.0-rc.3", features = ["derive"] }
 cu29-helpers = { version = "*" }
 cu-gstreamer = { version = "*" }
 rerun = { version = "*" }
+image = { version = "*" }
+imageproc = { version = "*" }
+apriltag = { version = "*" }
+
 
 [features]
 default = [] # Default feature set, does not include logreader

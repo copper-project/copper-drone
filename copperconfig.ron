@@ -5,7 +5,7 @@
             id: "src",
             type: "cu_gstreamer::CuDefaultGStreamer",
             config: {
-               "pipeline": "v4l2src device=/dev/video0 io-mode=4 ! video/x-raw,format=NV12,width=1920,height=1080 ! appsink name=copper",
+               "pipeline": "v4l2src device=/dev/video2 ! videoconvert ! videoscale ! videoflip method=vertical-flip ! video/x-raw,format=NV12,width=1920,height=1080 ! appsink name=copper",
                "caps": "video/x-raw,format=NV12,width=1920,height=1080",
             }
         ),
