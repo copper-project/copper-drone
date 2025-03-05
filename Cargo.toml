@@ -22,6 +22,10 @@ cu29-helpers = { path = "../copper-rs/core/cu29_helpers" }
 cu-msp-src = { path = "../copper-rs/components/sources/cu_msp_src"}
 cu-msp-sink = { path = "../copper-rs/components/sinks/cu_msp_sink"}
 cu-msp-lib = { path = "../copper-rs/components/common/cu_msp_lib"}
+cu-gstreamer = { path = "../copper-rs/components/sources/cu_gstreamer"}
+cu-dynthreshold = { path = "../copper-rs/components/tasks/cu_dynthreshold"}
+cu-apriltag = { path = "../copper-rs/components/tasks/cu_apriltag"}
+cu-sensor-payloads = { path = "../copper-rs/components/payloads/cu_sensor_payloads"}
 
 [features]
 default = [] # Default feature set, does not include logreader

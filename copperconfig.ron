@@ -1,7 +1,7 @@
 (
     tasks: [
         (
-            id: "src",
+            id: "mspsrc",
             type: "cu_msp_src::MSPSrc",
             config: {
                 "device": "/dev/ttyS4",
@@ -9,11 +9,28 @@
             },
         ),
         (
+            id: "video",
+            type: "cu_gstreamer::CuDefaultGStreamer",
+            config: {
+                "pipeline": "v4l2src device=/dev/video0 ! video/x-raw, format=NV12 ! appsink name=copper",
+                "caps": "video/x-raw, format=NV12, width=1920, height=1080",
+            },
+        ),
+        (
+            id: "thres",
+            type: "cu_dynthreshold::DynThreshold",
+            config: {"width": 1920, "height": 1200, "block_radius": 100}
+        ),
+        (
+             id: "pos",
+             type: "cu_apriltag::AprilTags",
+        ),
+        (
             id: "control",
             type: "tasks::DroneControl",
         ),
         (
-            id: "sink",
+            id: "mspsink",
             type: "cu_msp_sink::MSPSink",
             config: {
                 "device": "/dev/ttyS4",
@@ -21,8 +38,13 @@
             },
         ),
      ],
-    cnx: [
-        (src: "src",  dst: "control",   msg: "cu_msp_src::MspResponseBatch"),
-        (src: "control",  dst: "sink",   msg: "cu_msp_sink::MspRequestBatch"),
+
+
+cnx: [
+        (src: "mspsrc",  dst: "control",   msg: "cu_msp_src::MspResponseBatch"),
+        (src: "video",   dst: "thres",     msg: "cu_gstreamer::CuGstBuffer"),
+        (src: "thres",   dst: "pos",       msg: "cu_sensor_payloads::CuImage<Vec<u8>>"),
+        (src: "pos",     dst: "control",   msg: "cu_apriltag::AprilTagDetections"),
+        (src: "control", dst: "mspsink",   msg: "cu_msp_sink::MspRequestBatch"),
     ],
 )
