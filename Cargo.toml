@@ -15,9 +15,13 @@ path = "src/logreader.rs"
 required-features = ["logreader"] # Ensures this binary is only compiled when the feature is enabled
 
 [dependencies]
-cu29 = { version = "*" }
 bincode = { version = "2.0.0-rc.3", features = ["derive"] }
-cu29-helpers = { version = "*" }
+
+cu29 = { path = "../copper-rs/core/cu29" }
+cu29-helpers = { path = "../copper-rs/core/cu29_helpers" }
+cu-msp-src = { path = "../copper-rs/components/sources/cu_msp_src"}
+cu-msp-sink = { path = "../copper-rs/components/sinks/cu_msp_sink"}
+cu-msp-lib = { path = "../copper-rs/components/common/cu_msp_lib"}
 
 [features]
 default = [] # Default feature set, does not include logreader

@@ -1,22 +1,28 @@
-// A sample configuration to get you started.
 (
     tasks: [
         (
             id: "src",
-            type: "tasks::MySource",
+            type: "cu_msp_src::MSPSrc",
+            config: {
+                "device": "/dev/ttyS4",
+                "baudrate": 1_000_000,
+            },
         ),
         (
-            id: "t-0",
-            type: "tasks::MyTask",
+            id: "control",
+            type: "tasks::DroneControl",
         ),
         (
             id: "sink",
-            type: "tasks::MySink",
+            type: "cu_msp_sink::MSPSink",
+            config: {
+                "device": "/dev/ttyS4",
+                "baudrate": 1_000_000,
+            },
         ),
      ],
-    // Makes a connection from the source to the task and from the task to the sink.
     cnx: [
-        (src: "src",  dst: "t-0",   msg: "crate::tasks::MyPayload"),
-        (src: "t-0",  dst: "sink",   msg: "crate::tasks::MyPayload"),
+        (src: "src",  dst: "control",   msg: "cu_msp_src::MspResponseBatch"),
+        (src: "control",  dst: "sink",   msg: "cu_msp_sink::MspRequestBatch"),
     ],
 )
