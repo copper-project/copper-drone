@@ -3,6 +3,7 @@ name = "drone"
 version = "0.1.0"
 edition = "2021"
 default-run = "drone"
+build = "build.rs"
 
 # The main executable of your application
 [[bin]]
@@ -26,6 +27,7 @@ cu-gstreamer = { path = "../copper-rs/components/sources/cu_gstreamer"}
 cu-dynthreshold = { path = "../copper-rs/components/tasks/cu_dynthreshold"}
 cu-apriltag = { path = "../copper-rs/components/tasks/cu_apriltag"}
 cu-sensor-payloads = { path = "../copper-rs/components/payloads/cu_sensor_payloads"}
+cu-pid = { path = "../copper-rs/components/tasks/cu_pid"}
 
 [features]
 default = [] # Default feature set, does not include logreader
@@ -34,4 +36,8 @@ logreader = ["cu29-export"] # Feature to enable logreader and its dependency
 [dependencies.cu29-export]
 version = "*"
 optional = true # Only included when the logreader feature is enabled
+
+[profile.release]
+lto = "fat"  # Use "fat" for maximum optimization
+codegen-units = 1  # Ensures better optimization (slower compile)
 

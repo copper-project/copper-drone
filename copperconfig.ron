@@ -12,18 +12,26 @@
             id: "video",
             type: "cu_gstreamer::CuDefaultGStreamer",
             config: {
-                "pipeline": "v4l2src device=/dev/video0 ! video/x-raw, format=NV12 ! appsink name=copper",
-                "caps": "video/x-raw, format=NV12, width=1920, height=1080",
+                "pipeline": "v4l2src device=/dev/video9 ! image/jpeg,width=1920,height=1080 ! tee name=t t. ! queue ! jpegdec ! videoconvert ! appsink name=copper t. ! queue ! jpegparse ! rtpjpegpay ! udpsink host=192.168.1.181 port=5000",
+                "caps": "video/x-raw, format=GRAY8, width=1920, height=1080",
             },
         ),
         (
             id: "thres",
             type: "cu_dynthreshold::DynThreshold",
-            config: {"width": 1920, "height": 1200, "block_radius": 100}
+            config: {"width": 1920, "height": 1080, "block_radius": 100}
         ),
         (
              id: "pos",
              type: "cu_apriltag::AprilTags",
+             config: {
+                 "tag_family": "tag16h5",
+                 "tag_size": 0.14,
+                 "fx": 1513.93,
+                 "fy": 1513.93,
+                 "cx": 946.84,
+                 "cy": 557.819,
+             },
         ),
         (
             id: "control",

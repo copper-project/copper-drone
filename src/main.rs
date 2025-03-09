@@ -13,14 +13,19 @@ struct DroneApplication {}
 
 fn main() {
     let logger_path = "drone.copper";
-    let copper_ctx =
-        basic_copper_setup(&PathBuf::from(logger_path), PREALLOCATED_STORAGE_SIZE, true, None).expect("Failed to setup logger.");
+    let copper_ctx = basic_copper_setup(
+        &PathBuf::from(logger_path),
+        PREALLOCATED_STORAGE_SIZE,
+        true,
+        None,
+    )
+    .expect("Failed to setup logger.");
     debug!("Logger created at {}.", logger_path);
     debug!("Creating application... ");
     let mut application = DroneApplicationBuilder::new()
-            .with_context(&copper_ctx)
-            .build()
-            .expect("Failed to create application.");
+        .with_context(&copper_ctx)
+        .build()
+        .expect("Failed to create application.");
     let clock = copper_ctx.clock.clone();
     debug!("Running... starting clock: {}.", clock.now());
 
