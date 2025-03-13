@@ -24,11 +24,11 @@ impl<'cl> CuTask<'cl> for DroneControl {
     {
         Ok(Self {
             pid: PIDController::new(
-                 50.0, // kp: max ±20 PWM at full ±0.4m error
+                70.0, // kp: max ±20 PWM at full ±0.4m error
                 0.5,  // ki: very slow integral to adjust bias over time
                 20.0, // kd: mild damping to prevent overshoot
                 0.0,  // setpoint: target zero offset from tag
-                30.0, // p_limit: proportional max output cap
+                40.0, // p_limit: proportional max output cap
                 10.0, // i_limit: integral cap
                 20.0, // d_limit: derivative cap
                 40.0, // output_limit: total throttle correction max ±40
@@ -45,7 +45,7 @@ impl<'cl> CuTask<'cl> for DroneControl {
         input: Self::Input,
         output: Self::Output,
     ) -> CuResult<()> {
-        const MID_THROTTLE: f32 = 1260.0;
+        const MID_THROTTLE: f32 = 1280.0;
 
         let mut batch = MspRequestBatch::new();
 
