@@ -1,5 +1,7 @@
 ## Tutorial: Copper on a Drone Series
 
+![Copper Drone Tutorial](doc/thumb.jpg)
+
 This GitHub project supports the video tutorial series on how to use [Copper](https://github.com/copper-project/copper-rs),  
 the Rust-based robotics runtime.
 
