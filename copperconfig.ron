@@ -56,5 +56,6 @@ cnx: [
         (src: "pos",     dst: "control",   msg: "cu_apriltag::AprilTagDetections"),
         (src: "control", dst: "mspsink",   msg: "cu_msp_sink::MspRequestBatch"),
     ],
-     logging: ( enable_task_logging: false ),
+logging: ( enable_task_logging: false ), 
+monitor: ( type: "cu_consolemon::CuConsoleMon",)
 )

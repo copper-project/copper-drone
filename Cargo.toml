@@ -34,6 +34,7 @@ cu-dynthreshold = { path = "../copper-rs/components/tasks/cu_dynthreshold"}
 cu-apriltag = { path = "../copper-rs/components/tasks/cu_apriltag"}
 cu-sensor-payloads = { path = "../copper-rs/components/payloads/cu_sensor_payloads"}
 cu-pid = { path = "../copper-rs/components/tasks/cu_pid"}
+cu-consolemon = { path = "../copper-rs/components/monitors/cu_consolemon"}
 cu29-export = { path = "../copper-rs/core/cu29_export", optional = true }
 
 # Sim dependencies
