@@ -9,6 +9,7 @@ use cu29::prelude::*;
 use cu29_helpers::basic_copper_setup;
 use std::fs;
 use std::path::{Path, PathBuf};
+use cu_gstreamer::CuGstBuffer;
 
 // To enable sim, it is just your regular macro with sim_mode true
 #[copper_runtime(config = "copperconfig.ron", sim_mode = true)]
@@ -31,7 +32,7 @@ fn default_callback(step: SimStep) -> SimOverride {
     match step {
         // Don't let the real task execute process and override with our logic.
         SimStep::Video(CuTaskCallbackState::Process(_, _output)) => {
-            SimOverride::ExecutedBySim
+             SimOverride::ExecutedBySim
         },
         SimStep::Mspsink(CuTaskCallbackState::Process(_, _)) => SimOverride::ExecutedBySim,
         SimStep::Mspsrc(CuTaskCallbackState::Process(_, _)) => SimOverride::ExecutedBySim,
@@ -40,6 +41,9 @@ fn default_callback(step: SimStep) -> SimOverride {
 }
 
 fn setup_copper(world: &mut World) {
+
+    gstreamer::init().unwrap();
+
     #[allow(clippy::identity_op)]
     const LOG_SLAB_SIZE: Option<usize> = Some(1 * 1024 * 1024 * 1024);
     let logger_path = "logs/drone.copper";
@@ -101,7 +105,9 @@ fn run_copper_callback(
         .set_value(physics_time.elapsed().as_nanos() as u64);
     let mut sim_callback = move |step: SimStep<'_>| -> SimOverride {
         match step {
-            SimStep::Video(CuTaskCallbackState::Process(_, _output)) => {
+            SimStep::Video(CuTaskCallbackState::Process(_, output)) => {
+                let buffer = gstreamer::Buffer::with_size(2073600).unwrap();
+                output.set_payload(CuGstBuffer(buffer));
                 SimOverride::ExecutedBySim
             }
             SimStep::Mspsink(CuTaskCallbackState::Process(_, _)) => SimOverride::ExecutedBySim,

@@ -12,8 +12,10 @@
             id: "video",
             type: "cu_gstreamer::CuDefaultGStreamer",
             config: {
-                "pipeline": "v4l2src device=/dev/video9 ! image/jpeg,width=1920,height=1080 ! jpegdec ! videoconvert ! appsink name=copper",
-                //"pipeline": "v4l2src device=/dev/video9 ! image/jpeg,width=1920,height=1080 ! tee name=t t. ! queue ! jpegdec ! videoconvert ! appsink name=copper t. ! queue ! jpegparse ! rtpjpegpay ! udpsink host=192.168.1.73 port=5000",
+                // "pipeline": "v4l2src device=/dev/video9 ! image/jpeg,width=1920,height=1080 ! jpegdec ! videoconvert ! appsink name=copper",
+                // "pipeline": "v4l2src device=/dev/video0 ! name=t t. ! queue ! jpegdec ! videoconvert ! appsink name=copper t. ! queue ! jpegparse ! rtpjpegpay ! udpsink host=192.168.1.73 port=5000",
+                // local test
+                "pipeline": "v4l2src device=/dev/video0 ! videoconvert ! appsink name=copper",
                 "caps": "video/x-raw, format=GRAY8, width=1920, height=1080",
             },
         ),
