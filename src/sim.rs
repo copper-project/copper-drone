@@ -30,7 +30,7 @@ struct Copper {
 fn default_callback(step: SimStep) -> SimOverride {
     match step {
         // Don't let the real task execute process and override with our logic.
-        SimStep::Video(CuTaskCallbackState::Process(_, output)) => {
+        SimStep::Video(CuTaskCallbackState::Process(_, _output)) => {
             SimOverride::ExecutedBySim
         },
         SimStep::Mspsink(CuTaskCallbackState::Process(_, _)) => SimOverride::ExecutedBySim,
@@ -101,7 +101,7 @@ fn run_copper_callback(
         .set_value(physics_time.elapsed().as_nanos() as u64);
     let mut sim_callback = move |step: SimStep<'_>| -> SimOverride {
         match step {
-            SimStep::Video(CuTaskCallbackState::Process(_, output)) => {
+            SimStep::Video(CuTaskCallbackState::Process(_, _output)) => {
                 SimOverride::ExecutedBySim
             }
             SimStep::Mspsink(CuTaskCallbackState::Process(_, _)) => SimOverride::ExecutedBySim,

@@ -15,27 +15,8 @@ use iyes_perf_ui::prelude::{PerfUiAllEntries, PerfUiPlugin};
 use std::path::Path;
 use std::{fs, io};
 
-pub const BALANCEBOT: &str = "balancebot.glb";
 pub const SKYBOX: &str = "skybox.ktx2";
 pub const DIFFUSE_MAP: &str = "diffuse_map.ktx2";
-
-const TABLE_HEIGHT: f32 = 0.724;
-const RAIL_WIDTH: f32 = 0.55; // 55cm
-const RAIL_HEIGHT: f32 = 0.02;
-const RAIL_DEPTH: f32 = 0.06;
-
-const CART_WIDTH: f32 = 0.040;
-const CART_HEIGHT: f32 = 0.045; // The mid rail is 1cm above the bottom rail, and the cart is 35mm tall.
-const CART_DEPTH: f32 = RAIL_DEPTH;
-
-const ROD_WIDTH: f32 = 0.007; // 7mm
-const ROD_HEIGHT: f32 = 0.50; // 50cm
-const ROD_DEPTH: f32 = ROD_WIDTH;
-
-const AXIS_LENGTH: f32 = 0.02;
-
-const STEEL_DENSITY: f32 = 7800.0; // kg/m^3
-const ALUMINUM_DENSITY: f32 = 2700.0; // kg/m^3
 
 #[derive(Resource)]
 struct CameraControl {
@@ -112,7 +93,7 @@ fn ground_setup(
                 } else {
                     white_material.clone()
                 }),
-                Transform::from_xyz(x as f32 * 2.0, -TABLE_HEIGHT, z as f32 * 2.0),
+                //Transform::from_xyz(x as f32 * 2.0, -TABLE_HEIGHT, z as f32 * 2.0),
             ));
         }
     }
@@ -150,17 +131,6 @@ fn setup_scene(
         .build()
         .expect("Failed to create the file cache.");
 
-    let balance_bot_hashed = cache
-        .cached_path(format!("{}{}", BASE_ASSETS_URL, BALANCEBOT).as_str())
-        .expect("Failed to download and cache balancebot.glb.");
-    let balance_bot_path = balance_bot_hashed.parent().unwrap().join(BALANCEBOT);
-
-    create_symlink(
-        balance_bot_hashed.to_str().unwrap(),
-        balance_bot_path.to_str().unwrap(),
-    )
-    .expect("Failed to create symlink to balancebot.glb.");
-
     let skybox_path_hashed = cache
         .cached_path(format!("{}{}", BASE_ASSETS_URL, SKYBOX).as_str())
         .expect("Failed download and cache skybox.ktx2.");
@@ -184,9 +154,6 @@ fn setup_scene(
     .expect("Failed to create symlink to diffuse_map.ktx2.");
 
     // Load the resources
-    let scene_handle = asset_server.load(
-        GltfAssetLabel::Scene(0).from_asset(format!("{}#scene0", balance_bot_path.display())),
-    );
     let skybox_handle = asset_server.load(skybox_path);
     let diffuse_map_handle = asset_server.load(diffuse_map_path);
     let specular_map_handle = skybox_handle.clone(); // some quirk
@@ -196,9 +163,6 @@ fn setup_scene(
         color: Color::srgb_u8(210, 220, 240),
         brightness: 1.0,
     });
-
-    // load the scene
-    commands.spawn((SceneRoot(scene_handle),));
 
     // Spawn the camera
     commands.spawn((
@@ -310,23 +274,10 @@ fn setup_entities(
     setup_completed.0 = true; // Mark as completed
 }
 
-fn on_drag_transform(drag: Trigger<Pointer<Drag>>, mut transforms: Query<&mut Transform>) {
-    if drag.button != PointerButton::Primary {
-        return;
-    }
-    if let Ok(mut transform) = transforms.get_mut(drag.target) {
-        let pivot_world =
-            transform.translation + transform.rotation * Vec3::new(0.0, -ROD_HEIGHT / 2.0, 0.0);
-        transform.rotate_around(pivot_world, Quat::from_rotation_z(-drag.delta.x / 50.0));
-    }
-}
-
 #[allow(clippy::type_complexity)]
 fn reset_sim(
     keys: Res<ButtonInput<KeyCode>>,
     mut query: Query<(
-        // Option<&Rod>,
-        // Option<&Cart>,
         Option<&mut Transform>, // Ensure transform is mutable
         Option<&mut ExternalForce>,
         Option<&mut LinearVelocity>,
@@ -341,7 +292,7 @@ fn reset_sim(
             angular_velocity,
         ) in query.iter_mut()
         {
-            if let Some(mut transform) = transform {
+            if let Some(mut _transform) = transform {
                 // TODO
             }
             if let Some(mut ext_force) = ext_force {
